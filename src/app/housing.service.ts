@@ -16,11 +16,23 @@ export class HousingService {
   }
 
   async getHousingLocationById(id: number): Promise<HousingLocation | undefined> {
-    const data = await fetch(`${'http://localhost:8080/location'}/${id}`);
+    const data = await fetch(`${this.url}/${id}`);
     return data.json() ?? {};
   }
 
   submitApplication(firstName: string, lastName: string, email: string) {
     console.log(`Application submitted for ${firstName} ${lastName} at ${email}`);
+  }
+
+  async addLocation(housingLocation: HousingLocation) {
+    const response = await fetch(this.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(housingLocation)
+  });
+    const data = await response.json();
+    console.log(data);
   }
 }
