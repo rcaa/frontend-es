@@ -1,32 +1,39 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { User } from './user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'http://localhost:3000/auth'; // URL da API de autenticação
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
-
-  login(username: string, password: string): Observable<{ token: string }> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, { username, password }).pipe(
-      tap(response => {
-        localStorage.setItem('token', response.token); // Salvar token no localStorage
+  login(email: string, password: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}?email=${email}&password=${password}`).pipe(
+      tap(users => {
+        if (users.length > 0) {
+          localStorage.setItem('user', JSON.stringify(users[0])); // Armazena o usuário no localStorage
+        }
       })
     );
   }
 
-  logout() {
-    localStorage.removeItem('token'); // Remover token ao fazer logout
+  logout(): void {
+    localStorage.removeItem('user'); // Remove o usuário ao sair
+  }
+
+  getUser(): User | null {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token'); // Verifica se há um token
+    return !!this.getUser(); // Verifica se há um usuário autenticado
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  register(newUser: User): Observable<User> {
+    return this.http.post<User>(this.apiUrl, newUser); // Envia a solicitação para cadastrar um novo usuário
   }
 }
