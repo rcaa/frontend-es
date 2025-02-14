@@ -47,14 +47,9 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-  
-      this.authService.login(email, password).subscribe(users => {
-        if (users.length > 0) {
-          this.router.navigate(['home']);
-        } else {
-          alert('Credenciais inválidas');
-        }
-      });
+      this.authService.login(email, password)
+      .then(user => this.router.navigate(['/home']))
+      .catch(err => alert('Login error: ' + err));
     }
   }
 

@@ -1,27 +1,30 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { User } from './user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/auth'; // URL da API de autenticação
-  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:3000/auth';
 
-  login(email: string, password: string): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}?email=${email}&password=${password}`).pipe(
-      tap(users => {
-        if (users.length > 0) {
-          localStorage.setItem('user', JSON.stringify(users[0])); // Armazena o usuário no localStorage
-        }
-      })
-    );
+  async login(email: string, password: string): Promise<User | null> {
+    try {
+      const response = await fetch(`${this.apiUrl}?email=${email}&password=${password}`);
+      const users: User[] = await response.json();
+      
+      if (users.length > 0) {
+        localStorage.setItem('user', JSON.stringify(users[0]));
+        return users[0];
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      return null;
+    }
   }
 
   logout(): void {
-    localStorage.removeItem('user'); // Remove o usuário ao sair
+    localStorage.removeItem('user');
   }
 
   getUser(): User | null {
@@ -30,16 +33,25 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getUser(); // Verifica se há um usuário autenticado
+    return !!this.getUser();
   }
 
-  register(newUser: User): Observable<User> {
-    return this.http.post<User>(this.apiUrl, newUser); // Envia a solicitação para cadastrar um novo usuário
+  async register(newUser: User): Promise<User | null> {
+    try {
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser)
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao registrar usuário:', error);
+      return null;
+    }
   }
 
   hasRole(requiredRole: string): boolean {
-    const userString = localStorage.getItem('user');
-    const user = JSON.parse(userString || '{}');
-    return user.role === requiredRole;
+    const user = this.getUser();
+    return user ? user.role === requiredRole : false;
   }
 }

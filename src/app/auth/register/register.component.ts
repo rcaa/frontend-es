@@ -49,7 +49,6 @@ export class RegisterComponent {
     confirmPassword: ['', [Validators.required]]
   }, { validators: this.passwordMatchValidator });
 
-  // Validador customizado para confirmar as senhas
   passwordMatchValidator(formGroup: FormGroup) {
     const password = formGroup.get('password')?.value;
     const confirmPassword = formGroup.get('confirmPassword')?.value;
@@ -59,17 +58,11 @@ export class RegisterComponent {
   onSubmit() {
     if (this.registerForm.valid) {
       const { email, password } = this.registerForm.value;
-      const newUser = { id: 0, email, password, role: 'user' }; // Personalize conforme necessário
+      const newUser = { id: 0, email, password, role: 'user' };
 
-      // Chama o AuthService para criar um novo usuário
-      this.authService.register(newUser).subscribe({
-        next: () => {
-          this.router.navigate(['/login']); // Redireciona para a página de login após o cadastro
-        },
-        error: (err) => {
-          alert('Erro ao cadastrar usuário: ' + err);
-        }
-      });
+      this.authService.register(newUser)
+      .then(() => this.router.navigate(['/login']))
+      .catch(err => alert('Error registering user: ' + err));
     }
   }
 }

@@ -4,10 +4,11 @@ import { DetailsComponent } from "./details/details.component";
 import { LoginComponent } from "./auth/login/login.component";
 import { RegisterComponent } from "./auth/register/register.component";
 import { authGuard } from './auth/auth.guard';
+import { UnauthorizedComponent } from "./auth/unauthorized/unauthorized.component";
 
 const routeConfig: Routes = [
     { 
-        path: '', redirectTo: 'login', pathMatch: 'full' // Agora a página inicial redireciona para o login
+        path: '', redirectTo: 'login', pathMatch: 'full'
     },
     { 
         path: 'login', component: LoginComponent, title: 'Login'
@@ -22,8 +23,11 @@ const routeConfig: Routes = [
         path: 'details/:id', component: DetailsComponent, canActivate: [authGuard], title: 'Details Page',
         data: { role: 'user' }
     },
+    {
+        path: 'unauthorized', component: UnauthorizedComponent, title: 'Unauthorized'
+    },
     { 
-        path: '**', redirectTo: 'login' // Qualquer rota inválida também vai para o login
+        path: '**', redirectTo: 'login' 
     }
 ]; 
 
