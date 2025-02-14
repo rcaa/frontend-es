@@ -19,7 +19,8 @@ const routeConfig: Routes = [
         path: 'home', component: HomeComponent, canActivate: [authGuard], title: 'Home Page' 
     },
     { 
-        path: 'details/:id', component: DetailsComponent, canActivate: [authGuard], title: 'Details Page' 
+        path: 'details/:id', component: DetailsComponent, canActivate: [authGuard], title: 'Details Page',
+        data: { role: 'user' }
     },
     { 
         path: '**', redirectTo: 'login' // Qualquer rota inválida também vai para o login

@@ -36,4 +36,10 @@ export class AuthService {
   register(newUser: User): Observable<User> {
     return this.http.post<User>(this.apiUrl, newUser); // Envia a solicitação para cadastrar um novo usuário
   }
+
+  hasRole(requiredRole: string): boolean {
+    const userString = localStorage.getItem('user');
+    const user = JSON.parse(userString || '{}');
+    return user.role === requiredRole;
+  }
 }
