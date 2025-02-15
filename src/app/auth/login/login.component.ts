@@ -15,17 +15,15 @@ import { RouterModule } from '@angular/router';
         <h2>Login</h2>
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <label>Email</label>
-          <input type="email" formControlName="email" placeholder="Digite seu email" required (blur)="onBlur('email')"/>
+          <input type="email" formControlName="email" placeholder="Digite seu email" />
           <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
             Invalid email.
           </div>
-
           <label>Password</label>
           <input type="password" formControlName="password" placeholder="Digite sua senha" required />
           <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
             Password is mandatory.
           </div>
-
           <button type="submit" [disabled]="loginForm.invalid">Login</button>
         </form>
         <p>No account?  <a [routerLink]="['/register']">Register</a></p>
@@ -51,9 +49,5 @@ export class LoginComponent {
       .then(user => this.router.navigate(['/home']))
       .catch(err => alert('Login error: ' + err));
     }
-  }
-
-  onBlur(field: string) {
-    this.loginForm.get(field)?.markAsTouched();
   }
 }

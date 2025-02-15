@@ -9,7 +9,8 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<User | null> {
     try {
-      const response = await fetch(`${this.apiUrl}?email=${email}&password=${password}`);
+      const response = await fetch(`${this.apiUrl}?email=${email}
+        &password=${password}`);
       const users: User[] = await response.json();
       
       if (users.length > 0) {
@@ -27,15 +28,6 @@ export class AuthService {
     localStorage.removeItem('user');
   }
 
-  getUser(): User | null {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.getUser();
-  }
-
   async register(newUser: User): Promise<User | null> {
     try {
       const response = await fetch(this.apiUrl, {
@@ -50,8 +42,17 @@ export class AuthService {
     }
   }
 
+  isAuthenticated(): boolean {
+    return !!this.getUser();
+  }
+
   hasRole(requiredRole: string): boolean {
     const user = this.getUser();
     return user ? user.role === requiredRole : false;
+  }
+
+  getUser(): User | null {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
   }
 }

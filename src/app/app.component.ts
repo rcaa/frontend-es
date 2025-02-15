@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   standalone: true,
   selector: 'app-root',
-  imports: [RouterModule, CommonModule], // Apenas RouterModule para gerenciar rotas
+  imports: [RouterModule, CommonModule],
   template: `
     <main>
       <header class="brand-name">
