@@ -117,8 +117,13 @@
       "role": "user"
     },
     {
-      "id": "6cbc",
-      "email": "usuario@gmail.com",
+      "id": "3e98",
+      "email": "usuario@example.com",
+      "password": "123456"
+    },
+    {
+      "id": "53fb",
+      "email": "rodrigo@gmail.com",
       "password": "123456"
     }
   ]
