@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from './user';
+import { jwtDecode} from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -7,25 +8,29 @@ import { User } from './user';
 export class AuthService {
   private apiUrl = 'http://localhost:3000/auth';
 
-  async login(email: string, password: string): Promise<User | null> {
+  async login(email: string, password: string): Promise<boolean> {
     try {
-      const response = await fetch(`${this.apiUrl}?email=${email}
-        &password=${password}`);
-      const users: User[] = await response.json();
-      
-      if (users.length > 0) {
-        localStorage.setItem('user', JSON.stringify(users[0]));
-        return users[0];
+      const response = await fetch(this.apiUrl + "/login", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login falhou');
       }
-      return null;
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      return true;
     } catch (error) {
       console.error('Erro ao fazer login:', error);
-      return null;
+      return false;
     }
   }
 
   logout(): void {
-    localStorage.removeItem('user');
+    localStorage.removeItem('token');
   }
 
   async register(newUser: User): Promise<User | null> {
@@ -37,22 +42,30 @@ export class AuthService {
       });
       return await response.json();
     } catch (error) {
-      console.error('Erro ao registrar usuário:', error);
+      console.error('Error registering user:', error);
       return null;
     }
   }
 
   isAuthenticated(): boolean {
-    return !!this.getUser();
+    return !!this.getToken();
   }
 
   hasRole(requiredRole: string): boolean {
-    const user = this.getUser();
-    return user ? user.role === requiredRole : false;
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.role === requiredRole;
+    } catch (error) {
+      console.error('Token error:', error);
+      return false;
+    }
   }
 
-  getUser(): User | null {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 }
